@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652702927490",
+    "project_id": "flutterapp1-db371",
+    "storage_bucket": "flutterapp1-db371.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652702927490:android:a11691740d22dded5e029b",
+        "android_client_info": {
+          "package_name": "com.example.ai_iot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQQFiqTBHv68rtgnTwkK4LP8a_b51wwno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
