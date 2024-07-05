@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import './style.dart';
 import 'dart:io';
 
 // Conditional imports
 import 'upload_screen_mobile.dart' if (dart.library.html) 'upload_screen_web.dart';
 import 'error_handler_mobile.dart' if (dart.library.html) 'error_handler_web.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -45,13 +45,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       Fluttertoast.showToast(
         msg: 'Registration successful!',
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
         textColor: Colors.white,
         fontSize: 16.0,
       );
 
+      await Future.delayed(Duration(seconds: 3));
       Navigator.pushReplacementNamed(context, '/login');
     } catch (error) {
       setState(() {
@@ -114,41 +115,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? const Icon(Icons.add_a_photo)
                               : null,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(child: Divider()),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text('or register with'),
-                          ),
-                          Expanded(child: Divider()),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              // Handle Google registration
-                            },
-                            child: Image.asset('assets/google.png', width: 40, height: 40),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              // Handle Apple registration
-                            },
-                            child: Image.asset('assets/icloud.png', width: 40, height: 40),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              // Handle Facebook registration
-                            },
-                            child: Image.asset('assets/facebook.png', width: 40, height: 40),
-                          ),
-                        ],
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -217,10 +183,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: const Text('Register'),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        _message,
-                        style: const TextStyle(color: Colors.red),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.black,
+                              height: 36,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              'Register with',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.black,
+                              height: 36,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Google sign-in
+                            },
+                            child: Image.asset(
+                              'assets/google.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Apple sign-in
+                            },
+                            child: Image.asset(
+                              'assets/icloud.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Facebook sign-in
+                            },
+                            child: Image.asset(
+                              'assets/facebook.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: Text(
+                              'Already have an account? Login',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

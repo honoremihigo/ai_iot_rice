@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/camera': (context) => CameraScreen(),
         '/my_account': (context) => MyAccountScreen(),
         '/upload': (context) => UploadScreen(), // Add route for UploadScreen
-        '/camera_capture': (context) => CameraCaptureScreen(), // Add route for CameraCaptureScreen
+        '/camera_capture': (context) => CameraCaptureScreen(), // Add ro2ute for CameraCaptureScreen
       },
     );
   }

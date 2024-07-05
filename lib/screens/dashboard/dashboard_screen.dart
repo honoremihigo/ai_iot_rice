@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../style.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -14,6 +14,14 @@ class DashboardScreen extends StatelessWidget {
     }
   }
 
+  Future<Map<String, String>> _getUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('username') ?? 'User';
+    final profileImage =
+        prefs.getString('profileImage') ?? 'assets/profile.jpg';
+    return {'username': username, 'profileImage': profileImage};
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +32,19 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TopNav(),
+            FutureBuilder<Map<String, String>>(
+              future: _getUserInfo(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                final userInfo = snapshot.data ??
+                    {'username': 'User', 'profileImage': 'assets/profile.jpg'};
+                return TopNav(
+                    username: userInfo['username']!,
+                    profileImage: userInfo['profileImage']!);
+              },
+            ),
             Padding(
               padding: EdgeInsets.only(
                   left: 10.0,
@@ -39,9 +59,7 @@ class DashboardScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: WeatherSummary(),
             ),
-            FarmAnalytics(
-              seriesList:FarmAnalytics._createSampleData(),
-            ),
+            Farm(),
           ],
         ),
       ),
@@ -89,6 +107,11 @@ class DashboardScreen extends StatelessWidget {
 }
 
 class TopNav extends StatelessWidget {
+  final String username;
+  final String profileImage;
+
+  TopNav({required this.username, required this.profileImage});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -102,23 +125,22 @@ class TopNav extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundImage: NetworkImage(
-                  'assets/profile.jpg', // Replace with user's profile image URL
-                ),
+                backgroundImage:
+                    NetworkImage(profileImage), // Use user's profile image URL
               ),
               SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome back ',
+                    'Welcome back',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14.0,
                     ),
                   ),
                   Text(
-                    'Mihigo Prince ', // Replace with dynamic user name
+                    username, // Use dynamic user name
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18.0,
@@ -244,125 +266,35 @@ class WeatherSummary extends StatelessWidget {
   }
 }
 
-class FarmAnalytics extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
-
-  FarmAnalytics({required this.seriesList, this.animate = false});
-
-  /// Create sample data
-  static List<charts.Series<LinearSales, int>> _createSampleData() {
-    final data = [
-      new LinearSales(0, 5),
-      new LinearSales(1, 25),
-      new LinearSales(2, 100),
-      new LinearSales(3, 75),
-    ];
-
-    return [
-      new charts.Series<LinearSales, int>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
-        data: data,
-      )
-    ];
-  }
-
+class Farm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: AppStyles.contentMargin,
-      padding: AppStyles.contentPadding,
+      padding: EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Farm Analytics',
+            'Farm',
             style: TextStyle(
-              fontSize: 15.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10),
-          SizedBox(
+          SizedBox(height: 10.0),
+          Image.asset(
+            'assets/farm.jpg', // Replace with your farm image asset
             height: 200.0,
-            child: charts.LineChart(
-              _createSampleData(),
-              animate: animate,
-              behaviors: [
-                new charts.SeriesLegend(
-                  position: charts.BehaviorPosition.bottom,
-                  horizontalFirst: false,
-                  cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                ),
-                new charts.ChartTitle(
-                  'Rate of Rice Production',
-                  behaviorPosition: charts.BehaviorPosition.top,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-                new charts.ChartTitle(
-                  'Year',
-                  behaviorPosition: charts.BehaviorPosition.bottom,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-                new charts.ChartTitle(
-                  'Rate',
-                  behaviorPosition: charts.BehaviorPosition.start,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-              ],
-            ),
+            width: double.infinity,
+            fit: BoxFit.cover,
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10.0),
           Text(
-            'Chance to Overcome Pests and Diseases',
-            style: TextStyle(
-              fontSize: 15.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-          SizedBox(
-            height: 200.0,
-            child: charts.LineChart(
-              _createSampleData(),
-              animate: animate,
-              behaviors: [
-                new charts.SeriesLegend(
-                  position: charts.BehaviorPosition.bottom,
-                  horizontalFirst: false,
-                  cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                ),
-                new charts.ChartTitle(
-                  'Pest and Disease Control',
-                  behaviorPosition: charts.BehaviorPosition.top,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-                new charts.ChartTitle(
-                  'Year',
-                  behaviorPosition: charts.BehaviorPosition.bottom,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-                new charts.ChartTitle(
-                  'Control Rate',
-                  behaviorPosition: charts.BehaviorPosition.start,
-                  titleOutsideJustification: charts.OutsideJustification.middleDrawArea,
-                ),
-              ],
-            ),
+            'This is a description of the farm. Here you can provide more details about the farm and its significance.',
+            style: TextStyle(fontSize: 16.0),
           ),
         ],
       ),
     );
   }
-}
-
-/// Sample linear data type.
-class LinearSales {
-  final int year;
-  final int sales;
-
-  LinearSales(this.year, this.sales);
 }

@@ -13,26 +13,42 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _rememberMe = false;
   String _message = '';
 
   Future<void> _login() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? email = prefs.getString('email');
-    String? password = prefs.getString('password');
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? storedEmail = prefs.getString('email');
+      String? storedPassword = prefs.getString('password');
 
-    if (_emailController.text == email && _passwordController.text == password) {
-      Fluttertoast.showToast(
-        msg: 'Login successful!',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
+      if (_emailController.text == storedEmail &&
+          _passwordController.text == storedPassword) {
+        if (_rememberMe) {
+          prefs.setString('email', _emailController.text);
+          prefs.setString('password', _passwordController.text);
+        } else {
+          prefs.remove('email');
+          prefs.remove('password');
+        }
+
+        Fluttertoast.showToast(
+          msg: 'Login successful!',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        setState(() {
+          _message = 'Invalid email or password';
+        });
+      }
+    } catch (error) {
       setState(() {
-        _message = 'Invalid email or password';
+        _message = 'Login failed. Please try again.';
       });
     }
   }
@@ -57,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Enter your email and password to login',
+                  'Sign in to your account',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 24),
@@ -106,6 +122,34 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: true,
                       ),
                       const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
+                              const Text('Remember Me'),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              // Implement forgot password functionality
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -113,6 +157,83 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _login,
                           child: const Text('Login'),
                         ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.black,
+                              height: 36,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              'Login with',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.black,
+                              height: 36,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Google sign-in
+                            },
+                            child: Image.asset(
+                              'assets/google.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Apple sign-in
+                            },
+                            child: Image.asset(
+                              'assets/icloud.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          GestureDetector(
+                            onTap: () {
+                              // Implement Facebook sign-in
+                            },
+                            child: Image.asset(
+                              'assets/facebook.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/register');
+                            },
+                            child: Text(
+                              'Don\'t have an account? Register',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       Text(
